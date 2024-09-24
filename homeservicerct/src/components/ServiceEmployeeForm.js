@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import './ServiceEmployeeForm.css';
 
 const ServiceEmployeeForm = () => {
   const [formData, setFormData] = useState({
@@ -60,14 +61,14 @@ const ServiceEmployeeForm = () => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
+        <div className="form-group">
+          <label htmlFor="name">Name:</label>
           <input type='text' name='name' value={formData.name} onChange={handleChange} required />
         </div>
-        <div>
-          <label>Occupation:</label>
+        <div className="form-group">
+          <label htmlFor="occupation">Occupation:</label>
           <input
             type='text'
             name='occupation'
@@ -75,8 +76,8 @@ const ServiceEmployeeForm = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label>Experience (years):</label>
+        <div className="form-group">
+          <label htmlFor="experience">Experience (years):</label>
           <input
             type='number'
             name='experience'
@@ -85,8 +86,8 @@ const ServiceEmployeeForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Contact Number:</label>
+        <div className="form-group">
+          <label htmlFor="contactno">Contact Number:</label>
           <input
             type='text'
             name='contactno'
@@ -95,8 +96,8 @@ const ServiceEmployeeForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Rating (1-5):</label>
+        <div className="form-group">
+          <label htmlFor="rating">Rating (1-5):</label>
           <input
             type='number'
             name='rating'
@@ -107,8 +108,8 @@ const ServiceEmployeeForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Location:</label>
+        <div className="form-group">
+          <label htmlFor="location">Location:</label>
           <input
             type='text'
             name='location'
@@ -117,8 +118,8 @@ const ServiceEmployeeForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Mail:</label>
+        <div className="form-group">
+          <label htmlFor="mail">Mail:</label>
           <input type='text' name='mail' value={formData.mail} onChange={handleChange} required />
         </div>
         <button type='submit'>Save</button>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import emailjs from 'emailjs-com';
 
 const ServiceEmployeeData = () => {
   const [employee, setEmployee] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -14,11 +13,20 @@ const ServiceEmployeeData = () => {
             'Content-Type': 'application/json',
           },
         });
+                
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        setEmployee(result);
+
+         const updatedEmployee = result.map(user => ({
+            ...user,   
+            issue:'',           
+            address: '',
+            contactNumber: '',
+        }));
+        
+        setEmployee(updatedEmployee);
       } catch (error) {
         alert('error...');
       }
@@ -27,26 +35,34 @@ const ServiceEmployeeData = () => {
     fetchData();
   }, []);
 
-  const contactPerson = (mail) => {
-    const templateParams = {
-      to_email: { mail },
-      message: 'Please check customer issues',
-    };
-
-    const serviceId = 'service_029rccq';
-    const templateId = 'template_cpsbo9f';
-    const userId = '81UlmlDcvPcDy6kuQ';
-
-    emailjs.send(serviceId, templateId, templateParams, userId).then(
-      (response) => {
-        console.log('Email sent successfully:', response.status, response.text);
-        alert('Email sent successfully!');
-      },
-      (error) => {
-        console.error('Failed to send email:', error);
-        alert('Failed to send email. Please try again.');
-      }
+  const handleInputChange = (id, event, attr) => {
+      
+    const { value } = event.target;
+    const updatedData = employee.map(item => 
+        item.id === id ? { ...item, [attr]: value } : item
     );
+    setEmployee(updatedData);
+};
+
+  const contactPerson = async(employeeDetails) => {
+    try {
+      const res = await fetch('http://localhost:5000/send_whatsapp', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ recipient_number: `+91${employeeDetails.contactno}`, 
+            message_body: `Hi ${employeeDetails.name}, 
+            Issue: ${employeeDetails.issue}
+            Address: ${employeeDetails.address}
+            Contact Number: ${employeeDetails.contactNumber}` }),
+      });
+
+      await res.json();
+      alert('Whatsapp message sent successfully')
+  } catch (err) {
+      console.error(err);
+  }
   };
 
   const handleSearchChange = (e) => {
@@ -57,7 +73,7 @@ const ServiceEmployeeData = () => {
     (emp) =>
       emp.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       emp.occupation.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  );  
 
   return (
     <>
@@ -79,6 +95,9 @@ const ServiceEmployeeData = () => {
               <th>Location</th>
               <th>Contact Number</th>
               <th>Mail</th>
+              <th>Enter Your Issue</th>
+              <th>Enter Your Address</th>
+              <th>Enter Your Contact Number</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -92,7 +111,26 @@ const ServiceEmployeeData = () => {
                 <td>{row.contactno}</td>
                 <td>{row.mail}</td>
                 <td>
-                  <button onClick={() => contactPerson(row.mail)}>Contact</button>
+                <textarea
+                placeholder="Enter your Issue"
+                value={row.issue}
+                onChange={(e) => handleInputChange(row.id, e, 'issue')}
+            /></td>
+            <td>
+                <textarea
+                placeholder="Enter your Address"
+                value={row.address}
+                onChange={(e) => handleInputChange(row.id, e, 'address')}
+            /></td>
+            
+            <td>
+                <textarea
+                placeholder="Enter your Contact Number"
+                value={row.contactNumber}
+                onChange={(e) => handleInputChange(row.id, e, 'contactNumber')}
+            /></td>
+                <td>
+                  <button onClick={() => contactPerson(row)}>Contact</button>
                 </td>
               </tr>
             ))}
